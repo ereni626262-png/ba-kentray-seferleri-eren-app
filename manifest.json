@@ -1,11 +1,11 @@
 {
   "name": "Başkentray Saatleri",
   "short_name": "Başkentray",
-  "description": "Ankara Başkentray TCDD resmi sefer saatleri",
-  "start_url": "/",
+  "description": "Güncel Başkentray tren saatleri, harita ve akıllı konum takibi.",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#060e1f",
-  "theme_color": "#060e1f",
+  "background_color": "#050c1a",
+  "theme_color": "#050c1a",
   "orientation": "portrait",
   "lang": "tr",
   "icons": [
@@ -18,10 +18,8 @@
     {
       "src": "icons/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
   ],
-  "categories": ["travel", "utilities"],
-  "screenshots": []
+  "categories": ["travel", "utilities"]
 }
