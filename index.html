@@ -1,654 +1,138 @@
 <!DOCTYPE html>
-<html lang="tr"><head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#060e1f">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Başkentray">
-<title>Başkentray Saatleri</title>
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:#060e1f;color:#fff;min-height:100vh;-webkit-tap-highlight-color:transparent}
-.app{max-width:390px;margin:0 auto;padding-bottom:72px}
-.header{background:linear-gradient(160deg,#0b1f4a 0%,#1040a0 50%,#0b1f4a 100%);padding:1rem 1.2rem .9rem;position:relative;overflow:hidden}
-.header::after{content:'';position:absolute;bottom:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(74,144,226,0.12),transparent 70%);pointer-events:none}
-.hdr-top{display:flex;align-items:flex-start;justify-content:space-between}
-.hdr-logo{display:flex;align-items:center;gap:9px}
-.logo-circle{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#1a6fd4,#0d3a7a);border:2px solid rgba(74,144,226,0.5);display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 12px rgba(26,111,212,0.4)}
-.hdr-text-title{font-size:20px;font-weight:900;letter-spacing:1.5px}
-.hdr-text-sub{font-size:9px;color:rgba(255,255,255,0.45);letter-spacing:2.5px;text-transform:uppercase;margin-top:1px}
-.hdr-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
-.clock-box{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:22px;padding:5px 14px;font-size:18px;font-weight:800;letter-spacing:2px;font-variant-numeric:tabular-nums}
-.day-pill{border-radius:20px;padding:2px 10px;font-size:10px;font-weight:700}
-.day-pill.wi{background:rgba(46,204,113,0.2);border:1px solid rgba(46,204,113,0.4);color:#2ecc71}
-.day-pill.ws{background:rgba(245,166,35,0.2);border:1px solid rgba(245,166,35,0.4);color:#f5a623}
-.stop-hero{background:rgba(255,255,255,0.04);border-bottom:1px solid rgba(255,255,255,0.08);padding:.8rem 1.2rem .7rem}
-.sh-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:5px}
-.sh-left .sh-label{font-size:9px;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:3px}
-.sh-left .sh-name{font-size:24px;font-weight:900;letter-spacing:.3px}
-.sh-clock-big{display:flex;flex-direction:column;align-items:flex-end;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:6px 12px}
-.sh-clock-time{font-size:28px;font-weight:900;letter-spacing:1px;font-variant-numeric:tabular-nums;line-height:1;color:#fff}
-.sh-clock-sec{font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:1px;margin-top:2px;text-align:right}
-.sh-badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
-.sh-badge{border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600}
-.shb-line{background:rgba(26,111,212,0.2);border:1px solid rgba(74,144,226,0.35);color:#7ec8ff}
-.shb-term{background:rgba(231,76,60,0.15);border:1px solid rgba(231,76,60,0.35);color:#ff8080}
-.dir-toggle{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:.6rem 1.2rem .5rem}
-.dir-btn{padding:9px 8px;border-radius:12px;border:1.5px solid transparent;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;text-align:center;line-height:1.3}
-.dir-btn.active{background:linear-gradient(135deg,#1040a0,#1a6fd4);border-color:rgba(74,144,226,0.6);color:#fff;box-shadow:0 4px 14px rgba(26,111,212,0.35)}
-.dir-btn.off{background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.1);color:rgba(255,255,255,0.45)}
-.route-wrap{padding:.3rem 1.2rem .4rem;overflow-x:auto}
-.route-scroll{display:flex;align-items:flex-start;min-width:max-content;padding:4px 0}
-.r-seg{height:3px;width:20px;flex-shrink:0;margin-top:8px;border-radius:2px}
-.r-seg.done{background:linear-gradient(90deg,#1a6fd4,#4a90e2)}.r-seg.future{background:rgba(255,255,255,0.12)}
-.r-item{display:flex;flex-direction:column;align-items:center;cursor:pointer;min-width:50px;transition:.15s}
-.r-dot{width:13px;height:13px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);background:#0d1b35;flex-shrink:0;transition:all .2s}
-.r-dot.done{background:#1a6fd4;border-color:#4a90e2}
-.r-dot.active{width:19px;height:19px;background:#f5a623;border-color:#ffd166;box-shadow:0 0 0 4px rgba(245,166,35,0.2);animation:pp 1.6s ease-in-out infinite}
-.r-dot.terminal{border-color:#e74c3c;background:#1a0a0a}
-@keyframes pp{0%,100%{box-shadow:0 0 0 4px rgba(245,166,35,0.2)}50%{box-shadow:0 0 0 8px rgba(245,166,35,0.08)}}
-.r-lbl{font-size:8px;font-weight:600;color:rgba(255,255,255,0.35);margin-top:5px;text-align:center;max-width:48px;line-height:1.2}
-.r-lbl.active{color:#f5a623;font-size:9px;font-weight:800}
-.r-lbl.terminal{color:#ff8080}
-.r-sub{font-size:7px;color:#f5a623;height:9px;text-align:center;font-weight:700}
-.nt-card{margin:.2rem 1.2rem .6rem;border-radius:18px;padding:14px 16px;position:relative;overflow:hidden}
-.nt-card.ok{background:linear-gradient(135deg,#062918,#0d4a25,#062918);border:1px solid rgba(46,204,113,0.4)}
-.nt-card.soon{background:linear-gradient(135deg,#1e1000,#4a2800,#1e1000);border:1px solid rgba(245,166,35,0.4)}
-.nt-card.urgent{background:linear-gradient(135deg,#1a0606,#4a1010,#1a0606);border:1px solid rgba(231,76,60,0.4)}
-.nt-card.none{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)}
-.nt-card::before{content:'';position:absolute;top:-50px;right:-50px;width:150px;height:150px;border-radius:50%;pointer-events:none;opacity:.12}
-.nt-card.ok::before{background:radial-gradient(circle,#2ecc71,transparent)}
-.nt-card.soon::before{background:radial-gradient(circle,#f5a623,transparent)}
-.nt-card.urgent::before{background:radial-gradient(circle,#e74c3c,transparent)}
-.nt-badge{display:inline-flex;align-items:center;gap:5px;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;margin-bottom:10px}
-.nt-badge.ok{background:rgba(46,204,113,0.15);border:1px solid rgba(46,204,113,0.4);color:#2ecc71}
-.nt-badge.soon{background:rgba(245,166,35,0.15);border:1px solid rgba(245,166,35,0.4);color:#f5a623}
-.nt-badge.urgent{background:rgba(231,76,60,0.15);border:1px solid rgba(231,76,60,0.4);color:#ff6b6b}
-.nt-main{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:8px}
-.nt-dir{font-size:13px;font-weight:700;color:rgba(255,255,255,0.6);margin-bottom:4px}
-.nt-dep-time{font-size:40px;font-weight:900;line-height:1;letter-spacing:-1px;font-variant-numeric:tabular-nums}
-.nt-dep-time.ok{color:#2ecc71}.nt-dep-time.soon{color:#f5a623}.nt-dep-time.urgent{color:#ff6b6b}
-.nt-mins-big{font-size:46px;font-weight:900;line-height:1;letter-spacing:-2px}
-.nt-mins-big.ok{color:#2ecc71}.nt-mins-big.soon{color:#f5a623}.nt-mins-big.urgent{color:#ff6b6b}
-.nt-dk{font-size:12px;color:rgba(255,255,255,0.45);margin-top:3px}
-.nt-nextst{font-size:11px;color:rgba(255,255,255,0.4);margin-top:5px}
-.nt-nextst b{color:rgba(255,255,255,.7);font-weight:600}
-.train-track-wrap{position:relative;height:28px;overflow:hidden;margin:8px 0 3px;border-radius:4px}
-.tt-bg{position:absolute;top:50%;left:0;right:0;height:3px;background:rgba(255,255,255,0.08);transform:translateY(-50%);border-radius:2px}
-.tt-fill{position:absolute;top:50%;left:0;height:3px;border-radius:2px;transform:translateY(-50%);transition:width .6s ease}
-.train-ico{position:absolute;top:50%;transform:translateY(-58%);font-size:22px;animation:tgo 3s linear infinite}
-.train-ico.fast{animation-duration:1.5s}
-@keyframes tgo{0%{left:-35px}100%{left:calc(100% + 8px)}}
-.nt-upcoming{font-size:10px;color:rgba(255,255,255,0.3);margin-top:3px;display:flex;align-items:center;gap:5px}
-.nt-upcoming span{background:rgba(255,255,255,0.07);border-radius:6px;padding:2px 8px}
-.sec-head{display:flex;align-items:center;justify-content:space-between;padding:.5rem 1.2rem .3rem}
-.sec-title{font-size:11px;font-weight:700;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px}
-.sec-badge{background:rgba(74,144,226,0.15);border:1px solid rgba(74,144,226,0.3);color:#7ec8ff;border-radius:20px;padding:2px 10px;font-size:11px;font-weight:600}
-.sefer-list{padding:0 1.2rem;display:flex;flex-direction:column;gap:6px}
-.sefer{border-radius:14px;padding:11px 14px;border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.035);cursor:pointer;transition:all .18s}
-.sefer:active{transform:scale(0.98)}
-.sefer.next{background:rgba(46,204,113,0.07);border-color:rgba(46,204,113,0.3);border-left:3px solid #2ecc71}
-.sefer.past{opacity:.3}
-.s-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
-.s-time{font-size:22px;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
-.s-time.past{color:rgba(255,255,255,0.25);text-decoration:line-through}
-.s-time.nxt{color:#2ecc71}
-.s-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
-.kbadge{border-radius:20px;padding:3px 11px;font-size:11px;font-weight:700}
-.kbadge.past{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.3)}
-.kbadge.urgent{background:rgba(231,76,60,0.18);color:#ff6b6b;border:1px solid rgba(231,76,60,0.3)}
-.kbadge.soon{background:rgba(245,166,35,0.18);color:#f5a623;border:1px solid rgba(245,166,35,0.3)}
-.kbadge.normal{background:rgba(46,204,113,0.12);color:#2ecc71;border:1px solid rgba(46,204,113,0.25)}
-.s-nextst{font-size:10px;color:rgba(255,255,255,0.35)}
-.s-nextst b{color:rgba(255,255,255,.6);font-weight:600}
-.mr-dot-s{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin:0 1px}
-.mr-dot-s.done{background:#1a6fd4}.mr-dot-s.cur{background:#f5a623}.mr-dot-s.fut{background:rgba(255,255,255,0.15)}.mr-dot-s.term{background:#e74c3c}
-.mr-line{height:2px;flex:1;min-width:8px;border-radius:1px}
-.mr-line.done{background:#1a6fd4}.mr-line.fut{background:rgba(255,255,255,0.1)}
-.mr-dots{color:rgba(255,255,255,0.2);font-size:10px;margin:0 2px}
-.show-more{width:calc(100% - 2.4rem);margin:7px 1.2rem 0;background:rgba(74,144,226,0.08);border:1px dashed rgba(74,144,226,0.2);border-radius:12px;padding:9px;color:#7ec8ff;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;transition:.2s;font-weight:600}
-.daily-card{margin:8px 1.2rem 0;background:rgba(245,166,35,0.06);border:1px solid rgba(245,166,35,0.18);border-radius:14px;padding:11px 14px;display:flex;align-items:center;gap:10px}
-.dc-info .dc-t{font-size:13px;font-weight:700;color:rgba(255,255,255,0.85)}
-.dc-info .dc-s{font-size:10px;color:rgba(255,255,255,0.4);margin-top:1px}
-.dc-pills{display:flex;gap:5px;margin-left:auto}
-.dc-pill{background:rgba(255,255,255,0.07);border-radius:8px;padding:4px 9px;text-align:center}
-.dc-pl{font-size:8px;color:rgba(255,255,255,0.35)}
-.dc-pv{font-size:13px;font-weight:800;color:#f5a623}
-.tab-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:390px;max-width:100%;display:flex;background:rgba(6,14,31,0.96);border-top:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(12px);z-index:30;padding-bottom:env(safe-area-inset-bottom,0)}
-.tab{flex:1;padding:8px 2px 5px;text-align:center;cursor:pointer;font-size:9px;color:rgba(255,255,255,0.3);font-weight:600;transition:.15s;border-top:2px solid transparent}
-.tab.active{color:#00e5ff;border-top-color:#00e5ff}
-.tab-icon{font-size:16px;display:block;margin-bottom:2px}
-.page{display:none}.page.active{display:block}
-.durak-list{padding:.6rem 1.2rem;display:flex;flex-direction:column;gap:5px}
-.di{background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.07);border-radius:13px;padding:10px 13px;display:flex;align-items:center;cursor:pointer;transition:all .15s;gap:9px}
-.di:active{transform:scale(0.98)}
-.di.sel{border-color:rgba(245,166,35,0.5);background:rgba(245,166,35,0.06)}
-.di.term{border-left:3px solid #e74c3c}
-.di-num{font-size:10px;color:rgba(255,255,255,0.2);width:18px;text-align:right;flex-shrink:0;font-weight:600}
-.di-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.di-name{font-size:13px;font-weight:700;flex:1;color:rgba(255,255,255,0.85)}
-.di-name.sel{color:#f5a623}
-.di-sub{font-size:9px;color:rgba(255,255,255,0.3);margin-top:1px}
-.di-next{font-size:13px;font-weight:800;color:#2ecc71;white-space:nowrap}
-.di-star{background:none;border:none;font-size:16px;cursor:pointer;padding:0;flex-shrink:0}
-.fav-list,.notif-wrap{padding:.7rem 1.2rem;display:flex;flex-direction:column;gap:7px}
-.fav-item{background:rgba(245,166,35,0.05);border:1px solid rgba(245,166,35,0.18);border-left:3px solid #f5a623;border-radius:13px;padding:11px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between}
-.notif-item{border-radius:13px;padding:11px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;border:1px solid rgba(255,255,255,0.07)}
-.empty{color:rgba(255,255,255,0.3);font-size:13px;padding:2.5rem 0;text-align:center;line-height:1.7}
-#installBanner{display:none;position:fixed;top:0;left:50%;transform:translateX(-50%);width:390px;max-width:100%;background:linear-gradient(135deg,#1040a0,#1a6fd4);padding:10px 16px;z-index:100;align-items:center;justify-content:space-between;gap:10px}
-#installBanner p{font-size:12px;font-weight:600;flex:1}
-#installBanner button{background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);color:#fff;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif}
-#installBanner .close-btn{background:none;border:none;color:rgba(255,255,255,0.6);font-size:18px;cursor:pointer;padding:0}
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Hatası | Veri Kesintisi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-/* === TASARIMCI BANNER === */
-.date-bar{background:rgba(0,0,0,0.35);border-bottom:1px solid rgba(255,255,255,0.06);padding:5px 1.2rem;display:flex;align-items:center;justify-content:center;gap:8px;font-size:11px;color:rgba(255,255,255,0.5);font-weight:600;letter-spacing:.5px}
-.date-bar-val{color:rgba(255,255,255,0.8);font-weight:700}background:linear-gradient(135deg,#001a2e 0%,#003344 40%,#004455 60%,#001a2e 100%);border-bottom:1px solid rgba(0,200,200,0.25);padding:10px 1.2rem 8px;position:relative;overflow:hidden;text-align:center}
-.designer-banner::before{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,255,255,0.06),transparent);animation:shimmer 3s ease-in-out infinite}
-@keyframes shimmer{0%{left:-100%}100%{left:200%}}
-.designer-banner::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,220,220,0.5),rgba(0,255,255,0.8),rgba(0,220,220,0.5),transparent);animation:glow-line 2.5s ease-in-out infinite}
-@keyframes glow-line{0%,100%{opacity:.5}50%{opacity:1}}
-.designer-name{font-size:17px;font-weight:900;letter-spacing:3px;text-transform:uppercase;background:linear-gradient(90deg,#00b8cc,#00e5ff,#40ffff,#00e5ff,#00b8cc);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:text-shine 3s linear infinite;display:inline-block}
-@keyframes text-shine{0%{background-position:0% center}100%{background-position:200% center}}
-.designer-sub{font-size:9px;color:rgba(0,200,220,0.55);letter-spacing:3px;text-transform:uppercase;margin-top:2px}
+        body {
+            background: radial-gradient(circle at center, #1a1a2e 0%, #16213e 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            overflow: hidden;
+        }
 
-/* === DURAK HAT GÖSTERGESİ === */
-.stop-route-indicator{display:flex;align-items:center;justify-content:center;gap:6px;padding:5px 1.2rem 4px;background:rgba(0,0,0,0.2)}
-.sri-terminal{font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:.5px;white-space:nowrap}
-.sri-arrow{font-size:9px;color:rgba(255,255,255,0.2)}
-.sri-active-stop{font-size:14px;font-weight:900;color:#00e5ff;letter-spacing:.5px;text-shadow:0 0 12px rgba(0,229,255,0.5);white-space:nowrap}
-.sri-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.15);flex-shrink:0}
-/* Tren animasyonu hattı */
-.sri-track-wrap{flex:1;position:relative;height:18px;overflow:hidden;min-width:0}
-.sri-track-line{position:absolute;top:50%;left:0;right:0;height:2px;background:rgba(255,255,255,0.1);transform:translateY(-50%);border-radius:1px}
-.sri-train{position:absolute;top:50%;font-size:16px;transform:translateY(-55%);animation:sri-go-right 18s linear infinite}
-.sri-train.left{animation:sri-go-left 18s linear infinite}
-@keyframes sri-go-right{0%{left:-24px}100%{left:calc(100% + 4px)}}
-@keyframes sri-go-left{0%{right:-24px;left:auto}100%{right:calc(100% + 4px);left:auto}}
+        /* Arka plan animasyonu için hafif ışıklar */
+        .bg-glow {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: rgba(231, 76, 60, 0.3);
+            filter: blur(80px);
+            border-radius: 50%;
+            z-index: 0;
+            animation: pulse 6s infinite alternate;
+        }
 
-/* === HAKKINDA SAYFASI === */
-.about-page{padding:1rem 1.2rem 2rem}
-.about-hero{background:linear-gradient(135deg,#001a2e,#003344,#001a2e);border:1px solid rgba(0,200,220,0.3);border-radius:20px;padding:2rem 1.5rem;text-align:center;margin-bottom:1.2rem;position:relative;overflow:hidden}
-.about-hero::before{content:'';position:absolute;top:-30px;left:50%;transform:translateX(-50%);width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(0,200,220,0.08),transparent 70%);pointer-events:none}
-.about-avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#003344,#004455);border:2px solid rgba(0,200,220,0.5);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 14px;box-shadow:0 0 24px rgba(0,180,200,0.3)}
-.about-designer-name{font-size:22px;font-weight:900;letter-spacing:2px;background:linear-gradient(90deg,#00b8cc,#00e5ff,#40ffff,#00e5ff,#00b8cc);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:text-shine 3s linear infinite;margin-bottom:4px}
-.about-year{font-size:11px;color:rgba(0,200,220,0.5);letter-spacing:2px;margin-bottom:16px}
-.about-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(0,200,220,0.3),transparent);margin:14px 0}
-.about-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:14px 16px;margin-bottom:10px}
-.about-card-title{font-size:10px;color:rgba(0,200,220,0.6);letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:8px}
-.about-card-text{font-size:12px;color:rgba(255,255,255,0.6);line-height:1.7}
-.nt-note{margin:0 1.2rem .4rem;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:7px 12px;font-size:11px;color:rgba(255,255,255,0.45);font-style:italic;line-height:1.5}
-</style></head><body>
-<div id="installBanner">
-  <p>📲 Ana ekrana ekleyerek uygulama olarak kullan!</p>
-  <button id="installBtn">Ekle</button>
-  <button class="close-btn" onclick="document.getElementById('installBanner').style.display='none'">✕</button>
-</div>
-<div class="app">
-<!-- TASARIMCI BANNER -->
-<!-- TARİH BANDI -->
-<div class="date-bar">
-  <span>📅</span>
-  <span class="date-bar-val" id="topDate">-</span>
-  <span id="topDayPill" style="border-radius:20px;padding:2px 8px;font-size:10px;font-weight:700">-</span>
-</div>
-<div class="designer-banner">
-  <div class="designer-name">✦ Tasarımcı Eren SARIGÜL ✦</div>
-  <div class="designer-sub">Başkentray Mobil · 2026</div>
-</div>
-<div class="header">
-  <div class="hdr-top">
-    <div class="hdr-logo">
-      <div class="logo-circle">🚆</div>
-      <div>
-        <div class="hdr-text-title">BAŞKENTRAY</div>
-        <div class="hdr-text-sub">Resmi TCDD Tarifesi &nbsp;·&nbsp; <span id="clk" style="font-variant-numeric:tabular-nums">--:--</span></div>
-      </div>
-    </div>
-    <div class="hdr-right">
-      <div style="text-align:right">
-        <div style="font-size:13px;font-weight:800;color:#fff;letter-spacing:.3px" id="hdrDate">-</div>
-        <div class="day-pill" id="daypill" style="margin-top:3px;display:inline-block">-</div>
-      </div>
-    </div>
-  </div>
-</div>
-<div id="page-saatler" class="page active">
-  <div class="stop-hero">
-    <div class="sh-top">
-      <div class="sh-left">
-        <div class="sh-label">📍 Seçili Durak</div>
-        <div class="sh-name" id="heroName">-</div>
-      </div>
-      <div class="sh-clock-big">
-        <div class="sh-clock-time" id="heroClock">--:--</div>
-        <div class="sh-clock-sec" id="heroSec">--</div>
-      </div>
-    </div>
-    <div class="sh-badges" id="heroBadges"></div>
-  </div>
-  <!-- HAT GÖSTERGESİ -->
-  <div class="stop-route-indicator" id="stopRouteIndicator">
-    <span class="sri-terminal" id="sriFrom">SİNCAN</span>
-    <span class="sri-arrow">›</span>
-    <div class="sri-track-wrap">
-      <div class="sri-track-line"></div>
-      <div class="sri-train" id="sriTrain" style="animation-delay:-9s">🚃</div>
-    </div>
-    <span class="sri-arrow">›</span>
-    <span class="sri-active-stop" id="sriCurrent">-</span>
-    <span class="sri-arrow">›</span>
-    <div class="sri-track-wrap">
-      <div class="sri-track-line"></div>
-      <div class="sri-train" id="sriTrain2" style="animation-delay:-3s">🚃</div>
-    </div>
-    <span class="sri-arrow">›</span>
-    <span class="sri-terminal" id="sriTo">KAYAŞ</span>
-  </div>
-  <div class="dir-toggle">
-    <button class="dir-btn active" id="db0" onclick="setDir(0)">🔵 SİNCAN<br>→ KAYAŞ</button>
-    <button class="dir-btn off"    id="db1" onclick="setDir(1)">🔴 KAYAŞ<br>→ SİNCAN</button>
-  </div>
-  <div class="route-wrap"><div class="route-scroll" id="routeScroll"></div></div>
-  <div id="ntBox"></div>
-  <div class="sec-head">
-    <div class="sec-title">📅 Bugün — Seferler</div>
-    <div class="sec-badge" id="seferBadge">-</div>
-  </div>
-  <div class="sefer-list" id="seferList"></div>
-  <button class="show-more" id="showMoreBtn" onclick="toggleAll()">▼ Tüm saatleri göster</button>
-  <div class="daily-card" id="dailyCard" style="margin-bottom:1rem"></div>
-</div>
-<div id="page-duraklar" class="page">
-  <div class="dir-toggle" style="padding:.8rem 1.2rem .4rem">
-    <button class="dir-btn active" id="dd0" onclick="setDirD(0)">🔵 SİNCAN → KAYAŞ</button>
-    <button class="dir-btn off"    id="dd1" onclick="setDirD(1)">🔴 KAYAŞ → SİNCAN</button>
-  </div>
-  <div class="durak-list" id="durakList"></div>
-</div>
-<div id="page-fav" class="page">
-  <div style="padding:.8rem 1.2rem .3rem;font-size:11px;color:rgba(255,255,255,0.35);letter-spacing:1.5px;text-transform:uppercase;font-weight:700">⭐ Favori Duraklarım</div>
-  <div class="fav-list" id="favList"></div>
-</div>
-<div id="page-notif" class="page">
-  <div style="padding:.8rem 1.2rem .3rem;font-size:11px;color:rgba(255,255,255,0.35);letter-spacing:1.5px;text-transform:uppercase;font-weight:700">🔔 Yaklaşan Trenler (30 dk)</div>
-  <div class="notif-wrap" id="notifList"></div>
-</div>
-<div id="page-hakkinda" class="page">
-  <div class="about-page">
-    <div class="about-hero">
-      <div class="about-avatar">👨‍💻</div>
-      <div class="about-designer-name">Eren SARIGÜL</div>
-      <div class="about-year">© 2026 · Tüm Hakları Saklıdır</div>
-      <div class="about-divider"></div>
-      <div style="font-size:11px;color:rgba(255,255,255,0.45);line-height:1.7">
-        Başkentray saatlerini her an elinizin altında tutmak için<br>
-        tasarlanmış bu uygulama, kullanıcı deneyimini ön planda<br>
-        tutarak sıfırdan geliştirilmiştir.
-      </div>
-    </div>
+        @keyframes pulse {
+            from { transform: scale(1); opacity: 0.5; }
+            to { transform: scale(1.5); opacity: 0.8; }
+        }
 
-    <div class="about-card">
-      <div class="about-card-title">🚆 Uygulama Hakkında</div>
-      <div class="about-card-text">
-        Başkentray Saatleri, Ankara'nın SİNCAN–KAYAŞ hattında seyahat eden yolcular için geliştirilmiş
-        ücretsiz bir PWA (Progressive Web App) uygulamasıdır. Resmi TCDD tarifeleri esas alınmıştır.
-        İnternet bağlantısı olmadan da çalışır, ana ekrana eklenebilir.
-      </div>
-    </div>
+        .error-container {
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 3rem;
+            border-radius: 24px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+        }
 
-    <div class="about-card">
-      <div class="about-card-title">⚙️ Özellikler</div>
-      <div class="about-card-text">
-        · Gerçek zamanlı sefer saatleri ve geri sayım<br>
-        · 24 durak için anlık kalkış bilgisi<br>
-        · Favori durak kaydetme<br>
-        · Hafta içi / hafta sonu otomatik tarife<br>
-        · Yaklaşan tren uyarıları (30 dk)<br>
-        · Çevrimdışı çalışma (Service Worker)
-      </div>
-    </div>
+        .icon-box {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: shake 0.5s ease-in-out infinite;
+            display: inline-block;
+        }
 
-    <div class="about-card">
-      <div class="about-card-title">📱 Sürüm Bilgisi</div>
-      <div class="about-card-text">
-        Versiyon: 2.0.0<br>
-        Son güncelleme: Mart 2026<br>
-        Platform: PWA · Android · iOS<br>
-        Geliştirici: Eren SARIGÜL
-      </div>
-    </div>
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
+        }
 
-    <div style="text-align:center;margin-top:1.2rem;font-size:10px;color:rgba(255,255,255,0.2);letter-spacing:1.5px">
-      TASARIMCI EREN SARIGÜL · BAŞKENTRAY © 2026
-    </div>
-  </div>
-</div>
-<div class="tab-bar">
-  <div class="tab active" onclick="showPage('saatler',0)"><span class="tab-icon">🚆</span>Saatler</div>
-  <div class="tab" onclick="showPage('duraklar',1)"><span class="tab-icon">📍</span>Duraklar</div>
-  <div class="tab" onclick="showPage('fav',2)"><span class="tab-icon">⭐</span>Favoriler</div>
-  <div class="tab" onclick="showPage('notif',3)"><span class="tab-icon">🔔</span>Bildirim</div>
-  <div class="tab" onclick="showPage('hakkinda',4)"><span class="tab-icon">👨‍💻</span>Hakkında</div>
-</div>
-</div>
-<script>
-const SCHED_D0 = {"Sincan": ["06:00", "06:12", "06:24", "06:36", "06:48", "07:00", "07:12", "07:24", "07:36", "07:48", "08:00", "08:12", "08:24", "08:36", "08:48", "09:00", "09:15", "09:30", "09:45", "10:00", "10:15", "10:30", "10:45", "11:00", "11:15", "11:30", "11:45", "12:00", "12:15", "12:30", "12:45", "13:00", "13:15", "13:30", "13:45", "14:00", "14:15", "14:30", "14:45", "15:00", "15:15", "15:30", "15:45", "15:57", "16:09", "16:21", "16:33", "16:45", "16:57", "17:09", "17:21", "17:33", "17:45", "17:57", "18:09", "18:21", "18:33", "18:45", "19:00", "19:15", "19:30", "19:45", "20:00", "20:15", "20:30", "20:45", "21:00", "21:15", "21:30", "22:00", "22:30", "23:00", "23:30"], "Lale": ["06:02", "06:14", "06:26", "06:38", "06:50", "07:02", "07:14", "07:26", "07:38", "07:50", "08:02", "08:14", "08:26", "08:38", "08:50", "09:02", "09:17", "09:32", "09:47", "10:02", "10:17", "10:32", "10:47", "11:02", "11:17", "11:32", "11:47", "12:02", "12:17", "12:32", "12:47", "13:02", "13:17", "13:32", "13:47", "14:02", "14:17", "14:32", "14:47", "15:02", "15:17", "15:32", "15:47", "15:59", "16:11", "16:23", "16:35", "16:47", "16:59", "17:11", "17:23", "17:35", "17:47", "17:59", "18:11", "18:23", "18:35", "18:47", "19:02", "19:17", "19:32", "19:47", "20:02", "20:17", "20:32", "20:47", "21:02", "21:17", "21:32", "22:02", "22:32", "23:02", "23:32"], "Elvankent": ["06:04", "06:16", "06:28", "06:40", "06:52", "07:04", "07:16", "07:28", "07:40", "07:52", "08:04", "08:16", "08:28", "08:40", "08:52", "09:04", "09:19", "09:34", "09:49", "10:04", "10:19", "10:34", "10:49", "11:04", "11:19", "11:34", "11:49", "12:04", "12:19", "12:34", "12:49", "13:04", "13:19", "13:34", "13:49", "14:04", "14:19", "14:34", "14:49", "15:04", "15:19", "15:34", "15:49", "16:01", "16:13", "16:25", "16:37", "16:49", "17:01", "17:13", "17:25", "17:37", "17:49", "18:01", "18:13", "18:25", "18:37", "18:49", "19:04", "19:19", "19:34", "19:49", "20:04", "20:19", "20:34", "20:49", "21:04", "21:19", "21:34", "22:04", "22:34", "23:04", "23:34"], "Eryaman YHT": ["06:06", "06:18", "06:30", "06:42", "06:54", "07:06", "07:18", "07:30", "07:42", "07:54", "08:06", "08:18", "08:30", "08:42", "08:54", "09:06", "09:21", "09:36", "09:51", "10:06", "10:21", "10:36", "10:51", "11:06", "11:21", "11:36", "11:51", "12:06", "12:21", "12:36", "12:51", "13:06", "13:21", "13:36", "13:51", "14:06", "14:21", "14:36", "14:51", "15:06", "15:21", "15:36", "15:51", "16:03", "16:15", "16:27", "16:39", "16:51", "17:03", "17:15", "17:27", "17:39", "17:51", "18:03", "18:15", "18:27", "18:39", "18:51", "19:06", "19:21", "19:36", "19:51", "20:06", "20:21", "20:36", "20:51", "21:06", "21:21", "21:36", "22:06", "22:36", "23:06", "23:36"], "Özguneş": ["06:08", "06:20", "06:32", "06:44", "06:56", "07:08", "07:20", "07:32", "07:44", "07:56", "08:08", "08:20", "08:32", "08:44", "08:56", "09:08", "09:23", "09:38", "09:53", "10:08", "10:23", "10:38", "10:53", "11:08", "11:23", "11:38", "11:53", "12:08", "12:23", "12:38", "12:53", "13:08", "13:23", "13:38", "13:53", "14:08", "14:23", "14:38", "14:53", "15:08", "15:23", "15:38", "15:53", "16:05", "16:17", "16:29", "16:41", "16:53", "17:05", "17:17", "17:29", "17:41", "17:53", "18:05", "18:17", "18:29", "18:41", "18:53", "19:08", "19:23", "19:38", "19:53", "20:08", "20:23", "20:38", "20:53", "21:08", "21:23", "21:38", "22:08", "22:38", "23:08", "23:38"], "Etimesgut": ["06:10", "06:22", "06:34", "06:46", "06:58", "07:10", "07:22", "07:34", "07:46", "07:58", "08:10", "08:22", "08:34", "08:46", "08:58", "09:10", "09:25", "09:40", "09:55", "10:10", "10:25", "10:40", "10:55", "11:10", "11:25", "11:40", "11:55", "12:10", "12:25", "12:40", "12:55", "13:10", "13:25", "13:40", "13:55", "14:10", "14:25", "14:40", "14:55", "15:10", "15:25", "15:40", "15:55", "16:07", "16:19", "16:31", "16:43", "16:55", "17:07", "17:19", "17:31", "17:43", "17:55", "18:07", "18:19", "18:31", "18:43", "18:55", "19:10", "19:25", "19:40", "19:55", "20:10", "20:25", "20:40", "20:55", "21:10", "21:25", "21:40", "22:10", "22:40", "23:10", "23:40"], "Havadurağı": ["06:12", "06:24", "06:36", "06:48", "07:00", "07:12", "07:24", "07:36", "07:48", "08:00", "08:12", "08:24", "08:36", "08:48", "09:00", "09:12", "09:27", "09:42", "09:57", "10:12", "10:27", "10:42", "10:57", "11:12", "11:27", "11:42", "11:57", "12:12", "12:27", "12:42", "12:57", "13:12", "13:27", "13:42", "13:57", "14:12", "14:27", "14:42", "14:57", "15:12", "15:27", "15:42", "15:57", "16:09", "16:21", "16:33", "16:45", "16:57", "17:09", "17:21", "17:33", "17:45", "17:57", "18:09", "18:21", "18:33", "18:45", "18:57", "19:12", "19:27", "19:42", "19:57", "20:12", "20:27", "20:42", "20:57", "21:12", "21:27", "21:42", "22:12", "22:42", "23:12", "23:42"], "Yıldırım": ["06:14", "06:26", "06:38", "06:50", "07:02", "07:14", "07:26", "07:38", "07:50", "08:02", "08:14", "08:26", "08:38", "08:50", "09:02", "09:14", "09:29", "09:44", "09:59", "10:14", "10:29", "10:44", "10:59", "11:14", "11:29", "11:44", "11:59", "12:14", "12:29", "12:44", "12:59", "13:14", "13:29", "13:44", "13:59", "14:14", "14:29", "14:44", "14:59", "15:14", "15:29", "15:44", "15:59", "16:11", "16:23", "16:35", "16:47", "16:59", "17:11", "17:23", "17:35", "17:47", "17:59", "18:11", "18:23", "18:35", "18:47", "18:59", "19:14", "19:29", "19:44", "19:59", "20:14", "20:29", "20:44", "20:59", "21:14", "21:29", "21:44", "22:14", "22:44", "23:14", "23:44"], "Behiçbey": ["06:17", "06:29", "06:41", "06:53", "07:05", "07:17", "07:29", "07:41", "07:53", "08:05", "08:17", "08:29", "08:41", "08:53", "09:05", "09:17", "09:32", "09:47", "10:02", "10:17", "10:32", "10:47", "11:02", "11:17", "11:32", "11:47", "12:02", "12:17", "12:32", "12:47", "13:02", "13:17", "13:32", "13:47", "14:02", "14:17", "14:32", "14:47", "15:02", "15:17", "15:32", "15:47", "16:02", "16:14", "16:26", "16:38", "16:50", "17:02", "17:14", "17:26", "17:38", "17:50", "18:02", "18:14", "18:26", "18:38", "18:50", "19:02", "19:17", "19:32", "19:47", "20:02", "20:17", "20:32", "20:47", "21:02", "21:17", "21:32", "21:47", "22:17", "22:47", "23:17", "23:47"], "Motor Durağı": ["06:20", "06:32", "06:44", "06:56", "07:08", "07:20", "07:32", "07:44", "07:56", "08:08", "08:20", "08:32", "08:44", "08:56", "09:08", "09:20", "09:35", "09:50", "10:05", "10:20", "10:35", "10:50", "11:05", "11:20", "11:35", "11:50", "12:05", "12:20", "12:35", "12:50", "13:05", "13:20", "13:35", "13:50", "14:05", "14:20", "14:35", "14:50", "15:05", "15:20", "15:35", "15:50", "16:05", "16:17", "16:29", "16:41", "16:53", "17:05", "17:17", "17:29", "17:41", "17:53", "18:05", "18:17", "18:29", "18:41", "18:53", "19:05", "19:20", "19:35", "19:50", "20:05", "20:20", "20:35", "20:50", "21:05", "21:20", "21:35", "21:50", "22:20", "22:50", "23:20", "23:50"], "Gazi": ["06:22", "06:34", "06:46", "06:58", "07:10", "07:22", "07:34", "07:46", "07:58", "08:10", "08:22", "08:34", "08:46", "08:58", "09:10", "09:22", "09:37", "09:52", "10:07", "10:22", "10:37", "10:52", "11:07", "11:22", "11:37", "11:52", "12:07", "12:22", "12:37", "12:52", "13:07", "13:22", "13:37", "13:52", "14:07", "14:22", "14:37", "14:52", "15:07", "15:22", "15:37", "15:52", "16:07", "16:19", "16:31", "16:43", "16:55", "17:07", "17:19", "17:31", "17:43", "17:55", "18:07", "18:19", "18:31", "18:43", "18:55", "19:07", "19:22", "19:37", "19:52", "20:07", "20:22", "20:37", "20:52", "21:07", "21:22", "21:37", "21:52", "22:22", "22:52", "23:22", "23:52"], "Gazi Mahallesi": ["06:24", "06:36", "06:48", "07:00", "07:12", "07:24", "07:36", "07:48", "08:00", "08:12", "08:24", "08:36", "08:48", "09:00", "09:12", "09:24", "09:39", "09:54", "10:09", "10:24", "10:39", "10:54", "11:09", "11:24", "11:39", "11:54", "12:09", "12:24", "12:39", "12:54", "13:09", "13:24", "13:39", "13:54", "14:09", "14:24", "14:39", "14:54", "15:09", "15:24", "15:39", "15:54", "16:09", "16:21", "16:33", "16:45", "16:57", "17:09", "17:21", "17:33", "17:45", "17:57", "18:09", "18:21", "18:33", "18:45", "18:57", "19:09", "19:24", "19:39", "19:54", "20:09", "20:24", "20:39", "20:54", "21:09", "21:24", "21:39", "21:54", "22:24", "22:54", "23:24", "23:54"], "Hipodrom": ["06:26", "06:38", "06:50", "07:02", "07:14", "07:26", "07:38", "07:50", "08:02", "08:14", "08:26", "08:38", "08:50", "09:02", "09:14", "09:26", "09:41", "09:56", "10:11", "10:26", "10:41", "10:56", "11:11", "11:26", "11:41", "11:56", "12:11", "12:26", "12:41", "12:56", "13:11", "13:26", "13:41", "13:56", "14:11", "14:26", "14:41", "14:56", "15:11", "15:26", "15:41", "15:56", "16:11", "16:23", "16:35", "16:47", "16:59", "17:11", "17:23", "17:35", "17:47", "17:59", "18:11", "18:23", "18:35", "18:47", "18:59", "19:11", "19:26", "19:41", "19:56", "20:11", "20:26", "20:41", "20:56", "21:11", "21:26", "21:41", "21:56", "22:26", "22:56", "23:26", "23:56"], "Ankara": ["06:29", "06:41", "06:53", "07:05", "07:17", "07:29", "07:41", "07:53", "08:05", "08:17", "08:29", "08:41", "08:53", "09:05", "09:17", "09:29", "09:44", "09:59", "10:14", "10:29", "10:44", "10:59", "11:14", "11:29", "11:44", "11:59", "12:14", "12:29", "12:44", "12:59", "13:14", "13:29", "13:44", "13:59", "14:14", "14:29", "14:44", "14:59", "15:14", "15:29", "15:44", "15:59", "16:14", "16:26", "16:38", "16:50", "17:02", "17:14", "17:26", "17:38", "17:50", "18:02", "18:14", "18:26", "18:38", "18:50", "19:02", "19:14", "19:29", "19:44", "19:59", "20:14", "20:29", "20:44", "20:59", "21:14", "21:29", "21:44", "21:59", "22:29", "22:59", "23:29", "23:59"], "Yenişehir": ["06:33", "06:45", "06:57", "07:09", "07:21", "07:33", "07:45", "07:57", "08:09", "08:21", "08:33", "08:45", "08:57", "09:09", "09:21", "09:33", "09:48", "10:03", "10:18", "10:33", "10:48", "11:03", "11:18", "11:33", "11:48", "12:03", "12:18", "12:33", "12:48", "13:03", "13:18", "13:33", "13:48", "14:03", "14:18", "14:33", "14:48", "15:03", "15:18", "15:33", "15:48", "16:03", "16:18", "16:30", "16:42", "16:54", "17:06", "17:18", "17:30", "17:42", "17:54", "18:06", "18:18", "18:30", "18:42", "18:54", "19:06", "19:18", "19:33", "19:48", "20:03", "20:18", "20:33", "20:48", "21:03", "21:18", "21:33", "21:48", "22:03", "22:33", "23:03", "23:33"], "Kurtuluş": ["06:34", "06:46", "06:58", "07:10", "07:22", "07:34", "07:46", "07:58", "08:10", "08:22", "08:34", "08:46", "08:58", "09:10", "09:22", "09:34", "09:49", "10:04", "10:19", "10:34", "10:49", "11:04", "11:19", "11:34", "11:49", "12:04", "12:19", "12:34", "12:49", "13:04", "13:19", "13:34", "13:49", "14:04", "14:19", "14:34", "14:49", "15:04", "15:19", "15:34", "15:49", "16:04", "16:19", "16:31", "16:43", "16:55", "17:07", "17:19", "17:31", "17:43", "17:55", "18:07", "18:19", "18:31", "18:43", "18:55", "19:07", "19:19", "19:34", "19:49", "20:04", "20:19", "20:34", "20:49", "21:04", "21:19", "21:34", "21:49", "22:04", "22:34", "23:04", "23:34"], "Cebeci": ["06:36", "06:48", "07:00", "07:12", "07:24", "07:36", "07:48", "08:00", "08:12", "08:24", "08:36", "08:48", "09:00", "09:12", "09:24", "09:36", "09:51", "10:06", "10:21", "10:36", "10:51", "11:06", "11:21", "11:36", "11:51", "12:06", "12:21", "12:36", "12:51", "13:06", "13:21", "13:36", "13:51", "14:06", "14:21", "14:36", "14:51", "15:06", "15:21", "15:36", "15:51", "16:06", "16:21", "16:33", "16:45", "16:57", "17:09", "17:21", "17:33", "17:45", "17:57", "18:09", "18:21", "18:33", "18:45", "18:57", "19:09", "19:21", "19:36", "19:51", "20:06", "20:21", "20:36", "20:51", "21:06", "21:21", "21:36", "21:51", "22:06", "22:36", "23:06", "23:36"], "Demirlibahçe": ["06:38", "06:50", "07:02", "07:14", "07:26", "07:38", "07:50", "08:02", "08:14", "08:26", "08:38", "08:50", "09:02", "09:14", "09:26", "09:38", "09:53", "10:08", "10:23", "10:38", "10:53", "11:08", "11:23", "11:38", "11:53", "12:08", "12:23", "12:38", "12:53", "13:08", "13:23", "13:38", "13:53", "14:08", "14:23", "14:38", "14:53", "15:08", "15:23", "15:38", "15:53", "16:08", "16:23", "16:35", "16:47", "16:59", "17:11", "17:23", "17:35", "17:47", "17:59", "18:11", "18:23", "18:35", "18:47", "18:59", "19:11", "19:23", "19:38", "19:53", "20:08", "20:23", "20:38", "20:53", "21:08", "21:23", "21:38", "21:53", "22:08", "22:38", "23:08", "23:38"], "Saimekadın": ["06:40", "06:52", "07:04", "07:16", "07:28", "07:40", "07:52", "08:04", "08:16", "08:28", "08:40", "08:52", "09:04", "09:16", "09:28", "09:40", "09:55", "10:10", "10:25", "10:40", "10:55", "11:10", "11:25", "11:40", "11:55", "12:10", "12:25", "12:40", "12:55", "13:10", "13:25", "13:40", "13:55", "14:10", "14:25", "14:40", "14:55", "15:10", "15:25", "15:40", "15:55", "16:10", "16:25", "16:37", "16:49", "17:01", "17:13", "17:25", "17:37", "17:49", "18:01", "18:13", "18:25", "18:37", "18:49", "19:01", "19:13", "19:25", "19:40", "19:55", "20:10", "20:25", "20:40", "20:55", "21:10", "21:25", "21:40", "21:55", "22:10", "22:40", "23:10", "23:40"], "Mamak": ["06:42", "06:54", "07:06", "07:18", "07:30", "07:42", "07:54", "08:06", "08:18", "08:30", "08:42", "08:54", "09:06", "09:18", "09:30", "09:42", "09:57", "10:12", "10:27", "10:42", "10:57", "11:12", "11:27", "11:42", "11:57", "12:12", "12:27", "12:42", "12:57", "13:12", "13:27", "13:42", "13:57", "14:12", "14:27", "14:42", "14:57", "15:12", "15:27", "15:42", "15:57", "16:12", "16:27", "16:39", "16:51", "17:03", "17:15", "17:27", "17:39", "17:51", "18:03", "18:15", "18:27", "18:39", "18:51", "19:03", "19:15", "19:27", "19:42", "19:57", "20:12", "20:27", "20:42", "20:57", "21:12", "21:27", "21:42", "21:57", "22:12", "22:42", "23:12", "23:42"], "Bağderesi": ["06:44", "06:56", "07:08", "07:20", "07:32", "07:44", "07:56", "08:08", "08:20", "08:32", "08:44", "08:56", "09:08", "09:20", "09:32", "09:44", "09:59", "10:14", "10:29", "10:44", "10:59", "11:14", "11:29", "11:44", "11:59", "12:14", "12:29", "12:44", "12:59", "13:14", "13:29", "13:44", "13:59", "14:14", "14:29", "14:44", "14:59", "15:14", "15:29", "15:44", "15:59", "16:14", "16:29", "16:41", "16:53", "17:05", "17:17", "17:29", "17:41", "17:53", "18:05", "18:17", "18:29", "18:41", "18:53", "19:05", "19:17", "19:29", "19:44", "19:59", "20:14", "20:29", "20:44", "20:59", "21:14", "21:29", "21:44", "21:59", "22:14", "22:44", "23:14", "23:44"], "Üreğil": ["06:45", "06:57", "07:09", "07:21", "07:33", "07:45", "07:57", "08:09", "08:21", "08:33", "08:45", "08:57", "09:09", "09:21", "09:33", "09:45", "10:00", "10:15", "10:30", "10:45", "11:00", "11:15", "11:30", "11:45", "12:00", "12:15", "12:30", "12:45", "13:00", "13:15", "13:30", "13:45", "14:00", "14:15", "14:30", "14:45", "15:00", "15:15", "15:30", "15:45", "16:00", "16:15", "16:30", "16:42", "16:54", "17:06", "17:18", "17:30", "17:42", "17:54", "18:06", "18:18", "18:30", "18:42", "18:54", "19:06", "19:18", "19:30", "19:45", "20:00", "20:15", "20:30", "20:45", "21:00", "21:15", "21:30", "21:45", "22:00", "22:15", "22:45", "23:15", "23:45"], "Köstence": ["06:47", "06:59", "07:11", "07:23", "07:35", "07:47", "07:59", "08:11", "08:23", "08:35", "08:47", "08:59", "09:11", "09:23", "09:35", "09:47", "10:02", "10:17", "10:32", "10:47", "11:02", "11:17", "11:32", "11:47", "12:02", "12:17", "12:32", "12:47", "13:02", "13:17", "13:32", "13:47", "14:02", "14:17", "14:32", "14:47", "15:02", "15:17", "15:32", "15:47", "16:02", "16:17", "16:32", "16:44", "16:56", "17:08", "17:20", "17:32", "17:44", "17:56", "18:08", "18:20", "18:32", "18:44", "18:56", "19:08", "19:20", "19:32", "19:47", "20:02", "20:17", "20:32", "20:47", "21:02", "21:17", "21:32", "21:47", "22:02", "22:17", "22:47", "23:17", "23:47"], "Kayaş": ["06:49", "07:01", "07:13", "07:25", "07:37", "07:49", "08:01", "08:13", "08:25", "08:37", "08:49", "09:01", "09:13", "09:25", "09:37", "09:49", "10:04", "10:19", "10:34", "10:49", "11:04", "11:19", "11:34", "11:49", "12:04", "12:19", "12:34", "12:49", "13:04", "13:19", "13:34", "13:49", "14:04", "14:19", "14:34", "14:49", "15:04", "15:19", "15:34", "15:49", "16:04", "16:19", "16:34", "16:46", "16:58", "17:10", "17:22", "17:34", "17:46", "17:58", "18:10", "18:22", "18:34", "18:46", "18:58", "19:10", "19:22", "19:34", "19:49", "20:04", "20:19", "20:34", "20:49", "21:04", "21:19", "21:34", "21:49", "22:04", "22:19", "22:49", "23:19", "23:49"]};
-const STOPS_D0 = ["Sincan", "Lale", "Elvankent", "Eryaman YHT", "Özguneş", "Etimesgut", "Havadurağı", "Yıldırım", "Behiçbey", "Motor Durağı", "Gazi", "Gazi Mahallesi", "Hipodrom", "Ankara", "Yenişehir", "Kurtuluş", "Cebeci", "Demirlibahçe", "Saimekadın", "Mamak", "Bağderesi", "Üreğil", "Köstence", "Kayaş"];
-const SCHED_D1 = {"Kayaş": ["06:00", "06:12", "06:24", "06:36", "06:48", "07:00", "07:12", "07:24", "07:36", "07:48", "08:00", "08:12", "08:24", "08:36", "08:48", "09:00", "09:15", "09:30", "09:45", "10:00", "10:15", "10:30", "10:45", "11:00", "11:15", "11:30", "11:45", "12:00", "12:15", "12:30", "12:45", "13:00", "13:15", "13:30", "13:45", "14:00", "14:15", "14:30", "14:45", "15:00", "15:15", "15:30", "15:45", "15:57", "16:09", "16:21", "16:33", "16:45", "16:57", "17:09", "17:21", "17:33", "17:45", "17:57", "18:09", "18:21", "18:33", "18:45", "19:00", "19:15", "19:30", "19:45", "20:00", "20:15", "20:30", "20:45", "21:00", "21:15", "21:30", "22:00", "22:30", "23:00", "23:30"], "Köstence": ["06:02", "06:14", "06:26", "06:38", "06:50", "07:02", "07:14", "07:26", "07:38", "07:50", "08:02", "08:14", "08:26", "08:38", "08:50", "09:02", "09:17", "09:32", "09:47", "10:02", "10:17", "10:32", "10:47", "11:02", "11:17", "11:32", "11:47", "12:02", "12:17", "12:32", "12:47", "13:02", "13:17", "13:32", "13:47", "14:02", "14:17", "14:32", "14:47", "15:02", "15:17", "15:32", "15:47", "15:59", "16:11", "16:23", "16:35", "16:47", "16:59", "17:11", "17:23", "17:35", "17:47", "17:59", "18:11", "18:23", "18:35", "18:47", "19:02", "19:17", "19:32", "19:47", "20:02", "20:17", "20:32", "20:47", "21:02", "21:17", "21:32", "22:02", "22:32", "23:02", "23:32"], "Üreğil": ["06:04", "06:16", "06:28", "06:40", "06:52", "07:04", "07:16", "07:28", "07:40", "07:52", "08:04", "08:16", "08:28", "08:40", "08:52", "09:04", "09:19", "09:34", "09:49", "10:04", "10:19", "10:34", "10:49", "11:04", "11:19", "11:34", "11:49", "12:04", "12:19", "12:34", "12:49", "13:04", "13:19", "13:34", "13:49", "14:04", "14:19", "14:34", "14:49", "15:04", "15:19", "15:34", "15:49", "16:01", "16:13", "16:25", "16:37", "16:49", "17:01", "17:13", "17:25", "17:37", "17:49", "18:01", "18:13", "18:25", "18:37", "18:49", "19:04", "19:19", "19:34", "19:49", "20:04", "20:19", "20:34", "20:49", "21:04", "21:19", "21:34", "22:04", "22:34", "23:04", "23:34"], "Bağderesi": ["06:05", "06:17", "06:29", "06:41", "06:53", "07:05", "07:17", "07:29", "07:41", "07:53", "08:05", "08:17", "08:29", "08:41", "08:53", "09:05", "09:20", "09:35", "09:50", "10:05", "10:20", "10:35", "10:50", "11:05", "11:20", "11:35", "11:50", "12:05", "12:20", "12:35", "12:50", "13:05", "13:20", "13:35", "13:50", "14:05", "14:20", "14:35", "14:50", "15:05", "15:20", "15:35", "15:50", "16:02", "16:14", "16:26", "16:38", "16:50", "17:02", "17:14", "17:26", "17:38", "17:50", "18:02", "18:14", "18:26", "18:38", "18:50", "19:05", "19:20", "19:35", "19:50", "20:05", "20:20", "20:35", "20:50", "21:05", "21:20", "21:35", "22:05", "22:35", "23:05", "23:35"], "Mamak": ["06:07", "06:19", "06:31", "06:43", "06:55", "07:07", "07:19", "07:31", "07:43", "07:55", "08:07", "08:19", "08:31", "08:43", "08:55", "09:07", "09:22", "09:37", "09:52", "10:07", "10:22", "10:37", "10:52", "11:07", "11:22", "11:37", "11:52", "12:07", "12:22", "12:37", "12:52", "13:07", "13:22", "13:37", "13:52", "14:07", "14:22", "14:37", "14:52", "15:07", "15:22", "15:37", "15:52", "16:04", "16:16", "16:28", "16:40", "16:52", "17:04", "17:16", "17:28", "17:40", "17:52", "18:04", "18:16", "18:28", "18:40", "18:52", "19:07", "19:22", "19:37", "19:52", "20:07", "20:22", "20:37", "20:52", "21:07", "21:22", "21:37", "22:07", "22:37", "23:07", "23:37"], "Saimekadın": ["06:09", "06:21", "06:33", "06:45", "06:57", "07:09", "07:21", "07:33", "07:45", "07:57", "08:09", "08:21", "08:33", "08:45", "08:57", "09:09", "09:24", "09:39", "09:54", "10:09", "10:24", "10:39", "10:54", "11:09", "11:24", "11:39", "11:54", "12:09", "12:24", "12:39", "12:54", "13:09", "13:24", "13:39", "13:54", "14:09", "14:24", "14:39", "14:54", "15:09", "15:24", "15:39", "15:54", "16:06", "16:18", "16:30", "16:42", "16:54", "17:06", "17:18", "17:30", "17:42", "17:54", "18:06", "18:18", "18:30", "18:42", "18:54", "19:09", "19:24", "19:39", "19:54", "20:09", "20:24", "20:39", "20:54", "21:09", "21:24", "21:39", "22:09", "22:39", "23:09", "23:39"], "Demirlibahçe": ["06:11", "06:23", "06:35", "06:47", "06:59", "07:11", "07:23", "07:35", "07:47", "07:59", "08:11", "08:23", "08:35", "08:47", "08:59", "09:11", "09:26", "09:41", "09:56", "10:11", "10:26", "10:41", "10:56", "11:11", "11:26", "11:41", "11:56", "12:11", "12:26", "12:41", "12:56", "13:11", "13:26", "13:41", "13:56", "14:11", "14:26", "14:41", "14:56", "15:11", "15:26", "15:41", "15:56", "16:08", "16:20", "16:32", "16:44", "16:56", "17:08", "17:20", "17:32", "17:44", "17:56", "18:08", "18:20", "18:32", "18:44", "18:56", "19:11", "19:26", "19:41", "19:56", "20:11", "20:26", "20:41", "20:56", "21:11", "21:26", "21:41", "22:11", "22:41", "23:11", "23:41"], "Cebeci": ["06:13", "06:25", "06:37", "06:49", "07:01", "07:13", "07:25", "07:37", "07:49", "08:01", "08:13", "08:25", "08:37", "08:49", "09:01", "09:13", "09:28", "09:43", "09:58", "10:13", "10:28", "10:43", "10:58", "11:13", "11:28", "11:43", "11:58", "12:13", "12:28", "12:43", "12:58", "13:13", "13:28", "13:43", "13:58", "14:13", "14:28", "14:43", "14:58", "15:13", "15:28", "15:43", "15:58", "16:10", "16:22", "16:34", "16:46", "16:58", "17:10", "17:22", "17:34", "17:46", "17:58", "18:10", "18:22", "18:34", "18:46", "18:58", "19:13", "19:28", "19:43", "19:58", "20:13", "20:28", "20:43", "20:58", "21:13", "21:28", "21:43", "22:13", "22:43", "23:13", "23:43"], "Kurtuluş": ["06:15", "06:27", "06:39", "06:51", "07:03", "07:15", "07:27", "07:39", "07:51", "08:03", "08:15", "08:27", "08:39", "08:51", "09:03", "09:15", "09:30", "09:45", "10:00", "10:15", "10:30", "10:45", "11:00", "11:15", "11:30", "11:45", "12:00", "12:15", "12:30", "12:45", "13:00", "13:15", "13:30", "13:45", "14:00", "14:15", "14:30", "14:45", "15:00", "15:15", "15:30", "15:45", "16:00", "16:12", "16:24", "16:36", "16:48", "17:00", "17:12", "17:24", "17:36", "17:48", "18:00", "18:12", "18:24", "18:36", "18:48", "19:00", "19:15", "19:30", "19:45", "20:00", "20:15", "20:30", "20:45", "21:00", "21:15", "21:30", "21:45", "22:15", "22:45", "23:15", "23:45"], "Yenişehir": ["06:16", "06:28", "06:40", "06:52", "07:04", "07:16", "07:28", "07:40", "07:52", "08:04", "08:16", "08:28", "08:40", "08:52", "09:04", "09:16", "09:31", "09:46", "10:01", "10:16", "10:31", "10:46", "11:01", "11:16", "11:31", "11:46", "12:01", "12:16", "12:31", "12:46", "13:01", "13:16", "13:31", "13:46", "14:01", "14:16", "14:31", "14:46", "15:01", "15:16", "15:31", "15:46", "16:01", "16:13", "16:25", "16:37", "16:49", "17:01", "17:13", "17:25", "17:37", "17:49", "18:01", "18:13", "18:25", "18:37", "18:49", "19:01", "19:16", "19:31", "19:46", "20:01", "20:16", "20:31", "20:46", "21:01", "21:16", "21:31", "21:46", "22:16", "22:46", "23:16", "23:46"], "Ankara": ["06:20", "06:32", "06:44", "06:56", "07:08", "07:20", "07:32", "07:44", "07:56", "08:08", "08:20", "08:32", "08:44", "08:56", "09:08", "09:20", "09:35", "09:50", "10:05", "10:20", "10:35", "10:50", "11:05", "11:20", "11:35", "11:50", "12:05", "12:20", "12:35", "12:50", "13:05", "13:20", "13:35", "13:50", "14:05", "14:20", "14:35", "14:50", "15:05", "15:20", "15:35", "15:50", "16:05", "16:17", "16:29", "16:41", "16:53", "17:05", "17:17", "17:29", "17:41", "17:53", "18:05", "18:17", "18:29", "18:41", "18:53", "19:05", "19:20", "19:35", "19:50", "20:05", "20:20", "20:35", "20:50", "21:05", "21:20", "21:35", "21:50", "22:20", "22:50", "23:20", "23:50"], "Hipodrom": ["06:23", "06:35", "06:47", "06:59", "07:11", "07:23", "07:35", "07:47", "07:59", "08:11", "08:23", "08:35", "08:47", "08:59", "09:11", "09:23", "09:38", "09:53", "10:08", "10:23", "10:38", "10:53", "11:08", "11:23", "11:38", "11:53", "12:08", "12:23", "12:38", "12:53", "13:08", "13:23", "13:38", "13:53", "14:08", "14:23", "14:38", "14:53", "15:08", "15:23", "15:38", "15:53", "16:08", "16:20", "16:32", "16:44", "16:56", "17:08", "17:20", "17:32", "17:44", "17:56", "18:08", "18:20", "18:32", "18:44", "18:56", "19:08", "19:23", "19:38", "19:53", "20:08", "20:23", "20:38", "20:53", "21:08", "21:23", "21:38", "21:53", "22:23", "22:53", "23:23", "23:53"], "Gazi Mahallesi": ["06:25", "06:37", "06:49", "07:01", "07:13", "07:25", "07:37", "07:49", "08:01", "08:13", "08:25", "08:37", "08:49", "09:01", "09:13", "09:25", "09:40", "09:55", "10:10", "10:25", "10:40", "10:55", "11:10", "11:25", "11:40", "11:55", "12:10", "12:25", "12:40", "12:55", "13:10", "13:25", "13:40", "13:55", "14:10", "14:25", "14:40", "14:55", "15:10", "15:25", "15:40", "15:55", "16:10", "16:22", "16:34", "16:46", "16:58", "17:10", "17:22", "17:34", "17:46", "17:58", "18:10", "18:22", "18:34", "18:46", "18:58", "19:10", "19:25", "19:40", "19:55", "20:10", "20:25", "20:40", "20:55", "21:10", "21:25", "21:40", "21:55", "22:25", "22:55", "23:25", "23:55"], "Gazi": ["06:27", "06:39", "06:51", "07:03", "07:15", "07:27", "07:39", "07:51", "08:03", "08:15", "08:27", "08:39", "08:51", "09:03", "09:15", "09:27", "09:42", "09:57", "10:12", "10:27", "10:42", "10:57", "11:12", "11:27", "11:42", "11:57", "12:12", "12:27", "12:42", "12:57", "13:12", "13:27", "13:42", "13:57", "14:12", "14:27", "14:42", "14:57", "15:12", "15:27", "15:42", "15:57", "16:12", "16:24", "16:36", "16:48", "17:00", "17:12", "17:24", "17:36", "17:48", "18:00", "18:12", "18:24", "18:36", "18:48", "19:00", "19:12", "19:27", "19:42", "19:57", "20:12", "20:27", "20:42", "20:57", "21:12", "21:27", "21:42", "21:57", "22:27", "22:57", "23:27", "23:57"], "Motor Durağı": ["06:29", "06:41", "06:53", "07:05", "07:17", "07:29", "07:41", "07:53", "08:05", "08:17", "08:29", "08:41", "08:53", "09:05", "09:17", "09:29", "09:44", "09:59", "10:14", "10:29", "10:44", "10:59", "11:14", "11:29", "11:44", "11:59", "12:14", "12:29", "12:44", "12:59", "13:14", "13:29", "13:44", "13:59", "14:14", "14:29", "14:44", "14:59", "15:14", "15:29", "15:44", "15:59", "16:14", "16:26", "16:38", "16:50", "17:02", "17:14", "17:26", "17:38", "17:50", "18:02", "18:14", "18:26", "18:38", "18:50", "19:02", "19:14", "19:29", "19:44", "19:59", "20:14", "20:29", "20:44", "20:59", "21:14", "21:29", "21:44", "21:59", "22:29", "22:59", "23:29", "23:59"], "Behiçbey": ["06:32", "06:44", "06:56", "07:08", "07:20", "07:32", "07:44", "07:56", "08:08", "08:20", "08:32", "08:44", "08:56", "09:08", "09:20", "09:32", "09:47", "10:02", "10:17", "10:32", "10:47", "11:02", "11:17", "11:32", "11:47", "12:02", "12:17", "12:32", "12:47", "13:02", "13:17", "13:32", "13:47", "14:02", "14:17", "14:32", "14:47", "15:02", "15:17", "15:32", "15:47", "16:02", "16:17", "16:29", "16:41", "16:53", "17:05", "17:17", "17:29", "17:41", "17:53", "18:05", "18:17", "18:29", "18:41", "18:53", "19:05", "19:17", "19:32", "19:47", "20:02", "20:17", "20:32", "20:47", "21:02", "21:17", "21:32", "21:47", "22:02", "22:32", "23:02", "23:32"], "Yıldırım": ["06:35", "06:47", "06:59", "07:11", "07:23", "07:35", "07:47", "07:59", "08:11", "08:23", "08:35", "08:47", "08:59", "09:11", "09:23", "09:35", "09:50", "10:05", "10:20", "10:35", "10:50", "11:05", "11:20", "11:35", "11:50", "12:05", "12:20", "12:35", "12:50", "13:05", "13:20", "13:35", "13:50", "14:05", "14:20", "14:35", "14:50", "15:05", "15:20", "15:35", "15:50", "16:05", "16:20", "16:32", "16:44", "16:56", "17:08", "17:20", "17:32", "17:44", "17:56", "18:08", "18:20", "18:32", "18:44", "18:56", "19:08", "19:20", "19:35", "19:50", "20:05", "20:20", "20:35", "20:50", "21:05", "21:20", "21:35", "21:50", "22:05", "22:35", "23:05", "23:35"], "Havadurağı": ["06:37", "06:49", "07:01", "07:13", "07:25", "07:37", "07:49", "08:01", "08:13", "08:25", "08:37", "08:49", "09:01", "09:13", "09:25", "09:37", "09:52", "10:07", "10:22", "10:37", "10:52", "11:07", "11:22", "11:37", "11:52", "12:07", "12:22", "12:37", "12:52", "13:07", "13:22", "13:37", "13:52", "14:07", "14:22", "14:37", "14:52", "15:07", "15:22", "15:37", "15:52", "16:07", "16:22", "16:34", "16:46", "16:58", "17:10", "17:22", "17:34", "17:46", "17:58", "18:10", "18:22", "18:34", "18:46", "18:58", "19:10", "19:22", "19:37", "19:52", "20:07", "20:22", "20:37", "20:52", "21:07", "21:22", "21:37", "21:52", "22:07", "22:37", "23:07", "23:37"], "Etimesgut": ["06:39", "06:51", "07:03", "07:15", "07:27", "07:39", "07:51", "08:03", "08:15", "08:27", "08:39", "08:51", "09:03", "09:15", "09:27", "09:39", "09:54", "10:09", "10:24", "10:39", "10:54", "11:09", "11:24", "11:39", "11:54", "12:09", "12:24", "12:39", "12:54", "13:09", "13:24", "13:39", "13:54", "14:09", "14:24", "14:39", "14:54", "15:09", "15:24", "15:39", "15:54", "16:09", "16:24", "16:36", "16:48", "17:00", "17:12", "17:24", "17:36", "17:48", "18:00", "18:12", "18:24", "18:36", "18:48", "19:00", "19:12", "19:24", "19:39", "19:54", "20:09", "20:24", "20:39", "20:54", "21:09", "21:24", "21:39", "21:54", "22:09", "22:39", "23:09", "23:39"], "Özguneş": ["06:41", "06:53", "07:05", "07:17", "07:29", "07:41", "07:53", "08:05", "08:17", "08:29", "08:41", "08:53", "09:05", "09:17", "09:29", "09:41", "09:56", "10:11", "10:26", "10:41", "10:56", "11:11", "11:26", "11:41", "11:56", "12:11", "12:26", "12:41", "12:56", "13:11", "13:26", "13:41", "13:56", "14:11", "14:26", "14:41", "14:56", "15:11", "15:26", "15:41", "15:56", "16:11", "16:26", "16:38", "16:50", "17:02", "17:14", "17:26", "17:38", "17:50", "18:02", "18:14", "18:26", "18:38", "18:50", "19:02", "19:14", "19:26", "19:41", "19:56", "20:11", "20:26", "20:41", "20:56", "21:11", "21:26", "21:41", "21:56", "22:11", "22:41", "23:11", "23:41"], "Eryaman YHT": ["06:43", "06:55", "07:07", "07:19", "07:31", "07:43", "07:55", "08:07", "08:19", "08:31", "08:43", "08:55", "09:07", "09:19", "09:31", "09:43", "09:58", "10:13", "10:28", "10:43", "10:58", "11:13", "11:28", "11:43", "11:58", "12:13", "12:28", "12:43", "12:58", "13:13", "13:28", "13:43", "13:58", "14:13", "14:28", "14:43", "14:58", "15:13", "15:28", "15:43", "15:58", "16:13", "16:28", "16:40", "16:52", "17:04", "17:16", "17:28", "17:40", "17:52", "18:04", "18:16", "18:28", "18:40", "18:52", "19:04", "19:16", "19:28", "19:43", "19:58", "20:13", "20:28", "20:43", "20:58", "21:13", "21:28", "21:43", "21:58", "22:13", "22:43", "23:13", "23:43"], "Elvankent": ["06:45", "06:57", "07:09", "07:21", "07:33", "07:45", "07:57", "08:09", "08:21", "08:33", "08:45", "08:57", "09:09", "09:21", "09:33", "09:45", "10:00", "10:15", "10:30", "10:45", "11:00", "11:15", "11:30", "11:45", "12:00", "12:15", "12:30", "12:45", "13:00", "13:15", "13:30", "13:45", "14:00", "14:15", "14:30", "14:45", "15:00", "15:15", "15:30", "15:45", "16:00", "16:15", "16:30", "16:42", "16:54", "17:06", "17:18", "17:30", "17:42", "17:54", "18:06", "18:18", "18:30", "18:42", "18:54", "19:06", "19:18", "19:30", "19:45", "20:00", "20:15", "20:30", "20:45", "21:00", "21:15", "21:30", "21:45", "22:00", "22:15", "22:45", "23:15", "23:45"], "Lale": ["06:47", "06:59", "07:11", "07:23", "07:35", "07:47", "07:59", "08:11", "08:23", "08:35", "08:47", "08:59", "09:11", "09:23", "09:35", "09:47", "10:02", "10:17", "10:32", "10:47", "11:02", "11:17", "11:32", "11:47", "12:02", "12:17", "12:32", "12:47", "13:02", "13:17", "13:32", "13:47", "14:02", "14:17", "14:32", "14:47", "15:02", "15:17", "15:32", "15:47", "16:02", "16:17", "16:32", "16:44", "16:56", "17:08", "17:20", "17:32", "17:44", "17:56", "18:08", "18:20", "18:32", "18:44", "18:56", "19:08", "19:20", "19:32", "19:47", "20:02", "20:17", "20:32", "20:47", "21:02", "21:17", "21:32", "21:47", "22:02", "22:17", "22:47", "23:17", "23:47"], "Sincan": ["06:49", "07:01", "07:13", "07:25", "07:37", "07:49", "08:01", "08:13", "08:25", "08:37", "08:49", "09:01", "09:13", "09:25", "09:37", "09:49", "10:04", "10:19", "10:34", "10:49", "11:04", "11:19", "11:34", "11:49", "12:04", "12:19", "12:34", "12:49", "13:04", "13:19", "13:34", "13:49", "14:04", "14:19", "14:34", "14:49", "15:04", "15:19", "15:34", "15:49", "16:04", "16:19", "16:34", "16:46", "16:58", "17:10", "17:22", "17:34", "17:46", "17:58", "18:10", "18:22", "18:34", "18:46", "18:58", "19:10", "19:22", "19:34", "19:49", "20:04", "20:19", "20:34", "20:49", "21:04", "21:19", "21:34", "21:49", "22:04", "22:19", "22:49", "23:19", "23:49"]};
-const STOPS_D1 = ["Kayaş", "Köstence", "Üreğil", "Bağderesi", "Mamak", "Saimekadın", "Demirlibahçe", "Cebeci", "Kurtuluş", "Yenişehir", "Ankara", "Hipodrom", "Gazi Mahallesi", "Gazi", "Motor Durağı", "Behiçbey", "Yıldırım", "Havadurağı", "Etimesgut", "Özguneş", "Eryaman YHT", "Elvankent", "Lale", "Sincan"];
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #ff4d4d;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
 
-// Stops with terminal info
-const STOPS_INFO = {
-  'Sincan':{term:true},'Kayaş':{term:true}
-};
+        p {
+            color: #a0a0c0;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
 
-function pad(n){return n<10?'0'+n:''+n}
-function nowM(){const d=new Date();return d.getHours()*60+d.getMinutes()}
-function toM(t){const[h,m]=t.split(':').map(Number);return h*60+m}
-function until(t){return toM(t)-nowM()}
-function urgC(m){if(m<0)return'past';if(m<=3)return'urgent';if(m<=8)return'soon';return'normal'}
+        .error-code {
+            display: inline-block;
+            background: rgba(255, 77, 77, 0.1);
+            padding: 5px 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', Courier, monospace;
+            color: #ff4d4d;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
 
-let curStop='Saimekadın', curDir=0, showAll=false, favs=[];
-try{favs=JSON.parse(localStorage.getItem('bkpwa2')||'[]')}catch(e){}
+        .btn {
+            background: #ff4d4d;
+            color: white;
+            text-decoration: none;
+            padding: 12px 30px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+        }
 
-function getStops(di){return di===0?STOPS_D0:STOPS_D1}
-function getSched(di){return di===0?SCHED_D0:SCHED_D1}
-function getTimes(stop,di){return (getSched(di)[stop]||[]).filter(t=>true)}
-function getFuture(stop,di){return getTimes(stop,di).filter(t=>until(t)>=0)}
-function isTerminal(s){return s==='Sincan'||s==='Kayaş'}
+        .btn:hover {
+            background: #ff3333;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 77, 77, 0.3);
+        }
 
-function updateClock(){
-  const d=new Date();
-  const ts=pad(d.getHours())+':'+pad(d.getMinutes());
-  document.getElementById('clk').textContent=ts;
-  document.getElementById('heroClock').textContent=ts;
-  document.getElementById('heroSec').textContent=pad(d.getSeconds())+' sn';
-  const we=d.getDay();const isWE=we===0||we===6;
-  const p=document.getElementById('daypill');
-  if(isWE){p.textContent='Hafta Sonu';p.className='day-pill ws';}
-  else{p.textContent='Hafta İçi';p.className='day-pill wi';}
-  // Tarih metni
-  const aylar=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
-  const gunler=['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
-  const tarih=d.getDate()+' '+aylar[d.getMonth()]+' '+d.getFullYear();
-  const gun=gunler[we];
-  const tamTarih=gun+', '+tarih;
-  const el=document.getElementById('hdrDate');if(el)el.textContent=tarih;
-  const el2=document.getElementById('topDate');if(el2)el2.textContent=tamTarih;
-  // topDayPill
-  const tp=document.getElementById('topDayPill');
-  if(tp){
-    tp.textContent=isWE?'Hafta Sonu':'Hafta İçi';
-    tp.style.cssText=isWE?'border-radius:20px;padding:2px 8px;font-size:10px;font-weight:700;background:rgba(245,166,35,0.2);border:1px solid rgba(245,166,35,0.4);color:#f5a623':'border-radius:20px;padding:2px 8px;font-size:10px;font-weight:700;background:rgba(46,204,113,0.2);border:1px solid rgba(46,204,113,0.4);color:#2ecc71';
-  }
-}
+        .footer-text {
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: #666;	
+        }
+    </style>
+</head>
+<body>
 
-function mTxt(m){
-  if(m===0)return'Şimdi!';
-  if(m<60)return m+' dk';
-  const h=Math.floor(m/60),mn=m%60;
-  return mn>0?h+'sa '+mn+'dk':h+' sa';
-}
+    <div class="bg-glow"></div>
 
-function buildRoute(){
-  const rs=document.getElementById('routeScroll');rs.innerHTML='';
-  const stops=getStops(curDir);
-  const ci=stops.indexOf(curStop);
-  stops.forEach((s,i)=>{
-    const ia=i===ci,id=i<ci;
-    if(i>0){const seg=document.createElement('div');seg.className='r-seg '+(id?'done':'future');rs.appendChild(seg);}
-    const w=document.createElement('div');w.className='r-item';
-    w.onclick=()=>{curStop=s;renderAll()};
-    const dot=document.createElement('div');dot.className='r-dot '+(ia?'active':id?'done':isTerminal(s)?'terminal':'');
-    const lbl=document.createElement('div');lbl.className='r-lbl '+(ia?'active':isTerminal(s)?'terminal':'');
-    lbl.textContent=s.length>8?s.slice(0,7)+'…':s;
-    const sub=document.createElement('div');sub.className='r-sub';sub.textContent=ia?'◉':'';
-    w.appendChild(dot);w.appendChild(lbl);w.appendChild(sub);rs.appendChild(w);
-  });
-  setTimeout(()=>{
-    const stops2=getStops(curDir);
-    const ci2=stops2.indexOf(curStop);
-    const items=rs.querySelectorAll('.r-item');
-    if(items[ci2])items[ci2].scrollIntoView({inline:'center',behavior:'smooth'});
-  },80);
-}
-
-function buildNT(){
-  const fut=getFuture(curStop,curDir),nx=fut[0];
-  const box=document.getElementById('ntBox');
-  if(!nx){box.innerHTML=`<div class="nt-card none" style="margin:.2rem 1.2rem .6rem;text-align:center;padding:1.2rem;color:rgba(255,255,255,0.35);font-size:13px">Bugün için kalan sefer yok 🌙</div>`;return;}
-  const m=until(nx),u=urgC(m);
-  const stops=getStops(curDir);
-  const ci=stops.indexOf(curStop);
-  const ns=stops[Math.min(ci+1,stops.length-1)];
-  const dl=curDir===0?'SİNCAN → KAYAŞ':'KAYAŞ → SİNCAN';
-  const fp=Math.max(5,Math.min(93,100-m*3));
-  const fc=u==='urgent'?'#e74c3c':u==='soon'?'#f5a623':'#2ecc71';
-  // Durum notunu belirle
-  let noteHtml='';
-  if(m===0) noteHtml=`<div class="nt-note">🚆 Tren rötar yapmadıysa şu an durakta. Hemen binin!</div>`;
-  else if(u==='urgent') noteHtml=`<div class="nt-note">⚡ Az kaldı, acele et! Tren ${m} dakika sonra kalkıyor.</div>`;
-  else if(u==='soon') noteHtml=`<div class="nt-note">🏃 10 dakikadan az kaldı, durağa geç!</div>`;
-  else noteHtml=`<div class="nt-note">💡 Tren rötar yapmadıysa saate göre durakta bekleyebilirsin.</div>`;
-  box.innerHTML=noteHtml+`
-    <div class="nt-card ${u}" style="margin:.2rem 1.2rem .6rem">
-      <div class="nt-badge ${u}">${u==='urgent'?'🚨':u==='soon'?'⚠️':'🔔'}&nbsp;YAKLAŞAN TREN${m===0?' — DURAKTA':''}</div>
-      <div class="nt-main">
-        <div class="nt-left">
-          <div class="nt-dir">${dl}</div>
-          <div class="nt-dep-time ${u}">${nx}</div>
-          <div class="nt-nextst" style="margin-top:5px">› Sonraki: <b>${ns}</b></div>
+    <div class="error-container">
+        <div class="icon-box">⚠️</div>
+        <h1>Sistem Hatası</h1>
+        <div class="error-code">Hata Kodu: ERR_SYS_404_VOID</div>
+        <p>Görünüşe göre sistemimiz kısa bir süreliğine paralel evrene geçiş yaptı. Teknik ekibimiz boyut kapısını kapatmak için üzerinde çalışıyor.</p>
+        
+        <a href="#" class="btn" onclick="location.reload()">Sistemi Yenile</a>
+        
+        <div class="footer-text">
+            Yöneticiye bildirmek için otomatik rapor oluşturuldu.
         </div>
-        <div style="text-align:right">
-          <div class="nt-mins-big ${u}">${m===0?'🚆':m<60?m:Math.floor(m/60)+'sa'}</div>
-          <div class="nt-dk">${m===0?'Tren burada!':mTxt(m)+' kaldı'}</div>
-        </div>
-      </div>
-      <div class="train-track-wrap">
-        <div class="tt-bg"></div>
-        <div class="tt-fill" style="width:${fp}%;background:${fc}"></div>
-        <div class="train-ico ${u==='urgent'?'fast':''}">🚆</div>
-      </div>
-      ${fut[1]?`<div class="nt-upcoming">Sonraki: <span>${fut[1]}</span>${fut[2]?`<span>${fut[2]}</span>`:''}</div>`:''}
-    </div>`;
-}
+    </div>
 
-function miniR(stop,di){
-  const stops=getStops(di);
-  const ai=stops.indexOf(stop);
-  let html='';
-  stops.forEach((s,i)=>{
-    const ic=i===ai,id=i<ai,it=isTerminal(s);
-    const show=i===0||i===stops.length-1||ic||Math.abs(i-ai)===1;
-    if(!show){if(i===1||i===ai-2)html+=`<span class="mr-dots">…</span>`;return;}
-    if(i>0&&show)html+=`<div class="mr-line ${id||ic?'done':'fut'}" style="min-width:10px;flex:1"></div>`;
-    html+=`<div class="mr-dot-s ${ic?'cur':id?'done':it?'term':'fut'}"></div>`;
-  });
-  return `<div style="display:flex;align-items:center;overflow:hidden;width:100%">${html}</div>`;
-}
-
-function buildSefers(){
-  const times=getTimes(curStop,curDir);
-  const fut=getFuture(curStop,curDir),nx=fut[0];
-  const stops=getStops(curDir);
-  const ci=stops.indexOf(curStop);
-  const ns=stops[Math.min(ci+1,stops.length-1)];
-  document.getElementById('seferBadge').textContent=times.length+' sefer';
-  const past=times.filter(t=>until(t)<0);
-  const lastPast=past.length?[past[past.length-1]]:[];
-  const visible=showAll?times:[...lastPast,...fut].slice(0,7);
-  const list=document.getElementById('seferList');list.innerHTML='';
-  visible.forEach(t=>{
-    const m=until(t),ip=m<0,in2=t===nx,u=ip?'past':urgC(m);
-    const card=document.createElement('div');
-    card.className='sefer '+(in2?'next':ip?'past':'');
-    let kb=ip?`<span class="kbadge past">✓ Geçti</span>`:m===0?`<span class="kbadge urgent">🚆 Şimdi!</span>`:`<span class="kbadge ${u}">${mTxt(m)} kaldı</span>`;
-    card.innerHTML=`
-      <div class="s-row">
-        <div class="s-time ${ip?'past':in2?'nxt':''}">${t}</div>
-        <div class="s-right">${kb}<div class="s-nextst">Sonraki: <b>${ns}</b></div></div>
-      </div>
-      <div style="margin-top:4px">${miniR(curStop,curDir)}</div>`;
-    list.appendChild(card);
-  });
-  const rem=times.length-visible.length;
-  const btn=document.getElementById('showMoreBtn');
-  btn.textContent=showAll?'▲ Daha az göster':`🕐 Tüm saatleri göster (${rem} sefer daha) ▼`;
-  btn.style.display=times.length>7?'block':'none';
-  const dl=curDir===0?'SİNCAN → KAYAŞ':'KAYAŞ → SİNCAN';
-  document.getElementById('dailyCard').innerHTML=`
-    <div style="font-size:20px">📋</div>
-    <div class="dc-info"><div class="dc-t">${dl}</div><div class="dc-s">${times.length} sefer · Resmi TCDD</div></div>
-    <div class="dc-pills">
-      <div class="dc-pill"><div class="dc-pl">İLK</div><div class="dc-pv">${times[0]||'--'}</div></div>
-      <div class="dc-pill"><div class="dc-pl">SON</div><div class="dc-pv">${times[times.length-1]||'--'}</div></div>
-    </div>`;
-}
-
-function renderAll(){
-  document.getElementById('heroName').textContent=curStop;
-  document.getElementById('heroBadges').innerHTML=`
-    <span class="sh-badge shb-line">🚆 Sincan ↔ Kayaş</span>
-    ${isTerminal(curStop)?'<span class="sh-badge shb-term">🔴 Terminal</span>':''}`;
-  // Güzergah göstergesi güncelle
-  if(curDir===0){
-    document.getElementById('sriFrom').textContent='SİNCAN';
-    document.getElementById('sriTo').textContent='KAYAŞ';
-    document.getElementById('sriTrain').className='sri-train';
-    document.getElementById('sriTrain2').className='sri-train';
-  } else {
-    document.getElementById('sriFrom').textContent='KAYAŞ';
-    document.getElementById('sriTo').textContent='SİNCAN';
-    document.getElementById('sriTrain').className='sri-train left';
-    document.getElementById('sriTrain2').className='sri-train left';
-  }
-  document.getElementById('sriCurrent').textContent=curStop;
-  buildRoute();buildNT();buildSefers();
-}
-
-function setDir(d){
-  curDir=d;
-  document.getElementById('db0').className='dir-btn '+(d===0?'active':'off');
-  document.getElementById('db1').className='dir-btn '+(d===1?'active':'off');
-  // curStop'u karşı yöndeki listeye ayarla
-  const stops=getStops(d);
-  if(!stops.includes(curStop)) curStop=stops[0];
-  renderAll();
-}
-function setDirD(d){
-  curDir=d;
-  document.getElementById('dd0').className='dir-btn '+(d===0?'active':'off');
-  document.getElementById('dd1').className='dir-btn '+(d===1?'active':'off');
-  const stops=getStops(d);
-  if(!stops.includes(curStop)) curStop=stops[0];
-  buildDurak();
-}
-function toggleAll(){showAll=!showAll;buildSefers();}
-
-function buildDurak(){
-  const list=document.getElementById('durakList');list.innerHTML='';
-  const stops=getStops(curDir);
-  stops.forEach((s,di)=>{
-    const fut=getFuture(s,curDir);
-    const m=fut[0]?until(fut[0]):null;
-    const isel=s===curStop,ifav=favs.includes(s);
-    const item=document.createElement('div');
-    item.className='di '+(isel?'sel':'')+(isTerminal(s)?' term':'');
-    item.innerHTML=`
-      <div class="di-num">${di+1}</div>
-      <div class="di-dot" style="background:${isTerminal(s)?'#e74c3c':'#1a6fd4'};border:2px solid ${isTerminal(s)?'#ff8080':'#4a90e2'}"></div>
-      <div style="flex:1;min-width:0">
-        <div class="di-name ${isel?'sel':''}">${s}</div>
-        <div class="di-sub">${isTerminal(s)?'Terminal':'Ara Durak'}${fut[0]?' · '+fut[0]:''}</div>
-      </div>
-      ${m!==null?`<div class="di-next">${mTxt(m)}</div>`:''}
-      <button class="di-star" style="color:${ifav?'#f5a623':'rgba(255,255,255,0.2)'}"
-        onclick="event.stopPropagation();toggleFav('${s}',this)">${ifav?'★':'☆'}</button>`;
-    item.onclick=()=>{curStop=s;renderAll();showPage('saatler',0)};
-    list.appendChild(item);
-  });
-}
-
-function toggleFav(n,btn){
-  if(favs.includes(n)){favs=favs.filter(f=>f!==n);btn.textContent='☆';btn.style.color='rgba(255,255,255,0.2)';}
-  else{favs.push(n);btn.textContent='★';btn.style.color='#f5a623';}
-  try{localStorage.setItem('bkpwa2',JSON.stringify(favs))}catch(e){}
-  buildFav();
-}
-
-function buildFav(){
-  const fl=document.getElementById('favList');fl.innerHTML='';
-  if(!favs.length){fl.innerHTML='<div class="empty">Henüz favori eklenmedi.<br>Duraklar sekmesindeki ★ ile ekleyebilirsiniz.</div>';return;}
-  favs.forEach(n=>{
-    const fut=getFuture(n,curDir);
-    const m=fut[0]?until(fut[0]):null;
-    const item=document.createElement('div');item.className='fav-item';
-    item.innerHTML=`
-      <div>
-        <div style="font-size:14px;font-weight:800;color:#f5a623">⭐ ${n}</div>
-        <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px">${curDir===0?'SİNCAN → KAYAŞ':'KAYAŞ → SİNCAN'}${fut[0]?' · '+fut[0]:''}</div>
-      </div>
-      ${m!==null?`<div style="text-align:right"><div style="font-size:24px;font-weight:900;color:#2ecc71;line-height:1">${mTxt(m)}</div></div>`:''}`;
-    item.onclick=()=>{curStop=n;renderAll();showPage('saatler',0)};
-    fl.appendChild(item);
-  });
-}
-
-function buildNotif(){
-  const nl=document.getElementById('notifList');nl.innerHTML='';let f=0;
-  getStops(curDir).forEach(s=>{
-    const fut=getFuture(s,curDir);
-    if(!fut[0])return;const m=until(fut[0]);if(m>30)return;f++;
-    const u=urgC(m),c={urgent:'#e74c3c',soon:'#f5a623',normal:'#2ecc71'};
-    const item=document.createElement('div');item.className='notif-item';
-    item.style.cssText=`border-left:3px solid ${c[u]};background:rgba(${u==='urgent'?'231,76,60':u==='soon'?'245,166,35':'46,204,113'},.05)`;
-    item.innerHTML=`
-      <div>
-        <div style="font-size:14px;font-weight:800">${s}</div>
-        <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px">${fut[0]} kalkış${fut[1]?' · Sonraki: '+fut[1]:''}</div>
-      </div>
-      <div style="font-size:${m<=3?24:18}px;font-weight:900;color:${c[u]}">${m===0?'🚆':mTxt(m)}</div>`;
-    item.onclick=()=>{curStop=s;renderAll();showPage('saatler',0)};
-    nl.appendChild(item);
-  });
-  if(!f)nl.innerHTML='<div class="empty">Önümüzdeki 30 dk içinde<br>yaklaşan tren yok.</div>';
-}
-
-function showPage(n,i){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('page-'+n).classList.add('active');
-  document.querySelectorAll('.tab')[i].classList.add('active');
-  if(n==='duraklar')buildDurak();
-  if(n==='fav')buildFav();
-  if(n==='notif')buildNotif();
-}
-
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt',e=>{
-  e.preventDefault();deferredPrompt=e;
-  document.getElementById('installBanner').style.display='flex';
-});
-document.getElementById('installBtn').addEventListener('click',async()=>{
-  if(!deferredPrompt)return;
-  deferredPrompt.prompt();
-  const{outcome}=await deferredPrompt.userChoice;
-  deferredPrompt=null;
-  document.getElementById('installBanner').style.display='none';
-});
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js').catch(()=>{});
-}
-
-setInterval(updateClock,1000);updateClock();renderAll();
-setInterval(()=>{
-  buildNT();buildSefers();
-  if(document.getElementById('page-notif').classList.contains('active'))buildNotif();
-  if(document.getElementById('page-duraklar').classList.contains('active'))buildDurak();
-},60000);
-</script></body></html>
+</body>
+</html>
